@@ -1,0 +1,1594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory Master - Improved Version</title>
+    <link class="icon" rel="icon" href="brain.png" type="image/png" sizes="512x512">
+    <script src="https://cdn.jsdelivr.net/npm/js-confetti@latest/dist/js-confetti.browser.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        /* NAVBAR */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.9);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        } 
+
+        .icon {
+  width: 100px; 
+  height: 100px;
+}
+
+        p {
+            color: rgb(63, 61, 61);
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .navbar-brand { 
+            font-size: 18px; 
+            font-weight: bold; 
+            color: white;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .nav-btn:hover { background: #5568d3; transform: scale(1.05); }
+
+        /* MODALS */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            max-width: 450px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-title { 
+            font-size: 22px; 
+            font-weight: bold; 
+            margin-bottom: 18px; 
+            color: #333; 
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: #333;
+            font-size: 13px;
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .form-group input:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 8px;
+            transition: all 0.3s;
+        }
+
+        .btn-primary { background: #667eea; color: white; }
+        .btn-primary:hover { background: #5568d3; }
+        .btn-secondary { background: #e0e0e0; color: #333; }
+        .btn-secondary:hover { background: #d0d0d0; }
+
+        .modal-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 18px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .modal-tab {
+            padding: 8px 12px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            color: #999;
+            border-bottom: 3px solid transparent;
+            font-size: 14px;
+        }
+
+        .modal-tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .forgot-password-link {
+            display: block;
+            text-align: right;
+            color: #667eea;
+            font-size: 12px;
+            margin-top: 8px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .forgot-password-link:hover {
+            text-decoration: underline;
+        }
+
+        /* LOGIN SCREEN */
+        #loginModal { display: flex; }
+
+        /* DASHBOARD - IMPROVED MOBILE */
+        #dashboard {
+            display: none;
+            width: 100%;
+            max-width: 1200px;
+            margin: 70px auto 0;
+            padding: 20px;
+        }
+
+        .dashboard-header {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .user-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .info-item {
+            text-align: center;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .info-label {
+            font-size: 11px;
+            color: #999;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .level-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .level-btn {
+            padding: 18px;
+            background: rgb(85, 185, 235);
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+
+        .level-btn:hover {
+            border-color: #667eea;
+            color: #84a6f0;
+            transform: translateY(-3px);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 18px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .stat-card-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 12px;
+            color: #333;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .stat-row:last-child {
+            border-bottom: none;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .stat-value {
+            font-size: 14px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        /* GAME SCREEN */
+        #gameScreen {
+            display: none;
+            width: 100%;
+            max-width: 1000px;
+            margin: 70px auto 0;
+            padding: 20px;
+        }
+
+        .game-header {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .game-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .game-stats {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .game-stat {
+            text-align: center;
+        }
+
+        .game-stat-label {
+            font-size: 11px;
+            color: #999;
+        }
+
+        .game-stat-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .game-controls {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+
+        .game-btn {
+            padding: 8px 14px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .game-btn:hover { background: #5568d3; }
+
+        /* CARDS GRID - FIXED ALIGNMENT */
+        .cards-grid {
+            display: grid;
+            gap: 10px;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            max-width: fit-content;
+            margin: 0 auto;
+        }
+
+        /* EASY: 3 rows x 4 columns = 12 cards */
+        .grid-easy {
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+        }
+
+        /* MEDIUM: 4 rows x 5 columns = 20 cards */
+        .grid-medium {
+            grid-template-columns: repeat(5, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+        }
+
+        /* HARD: 5 rows x 6 columns = 30 cards */
+        .grid-hard {
+            grid-template-columns: repeat(6, 1fr);
+            grid-template-rows: repeat(5, 1fr);
+        }
+
+        .card {
+            width: 70px;
+            height: 70px;
+            cursor: pointer;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+            border-radius: 8px;
+        }
+
+        .card.flipped { transform: rotateY(180deg); }
+
+        .card-inner {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-size: 28px;
+            font-weight: bold;
+            backface-visibility: hidden;
+        }
+
+        .card-front {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .card-back {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            transform: rotateY(180deg);
+        }
+
+        .card.matched {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        .card.matched .card-back {
+            background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+        }
+
+        /* WIN MODAL */
+        #levelCompletedModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+        }
+
+        .win-content {
+            background: white;
+            padding: 35px;
+            border-radius: 12px;
+            text-align: center;
+            max-width: 380px;
+            width: 90%;
+        }
+
+        .win-title {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 18px;
+            color: #667eea;
+        }
+
+        .win-stat {
+            margin: 12px 0;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .win-stat-value {
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .win-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        .leaderboard-row {
+            display: grid;
+            grid-template-columns: 35px 1fr 70px 70px;
+            padding: 10px;
+            border-bottom: 1px solid #f0f0f0;
+            align-items: center;
+            font-size: 13px;
+        }
+
+        .rank { font-weight: bold; }
+        .name { font-weight: 600; color: #333; }
+        .score { text-align: center; color: #667eea; font-weight: bold; }
+        .time { text-align: center; color: #999; font-size: 11px; }
+
+        /* MOBILE RESPONSIVE */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 10px 12px;
+            }
+
+            .navbar-brand {
+                font-size: 16px;
+            }
+
+            .nav-buttons {
+                gap: 5px;
+            }
+
+            .nav-btn {
+                padding: 5px 8px;
+                font-size: 10px;
+            }
+
+            #dashboard {
+                margin-top: 65px;
+                padding: 12px;
+            }
+
+            .dashboard-header {
+                padding: 15px;
+            }
+
+            .user-info {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .info-value {
+                font-size: 18px;
+            }
+
+            .level-selector {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            #gameScreen {
+                margin-top: 65px;
+                padding: 12px;
+            }
+
+            .game-header {
+                padding: 12px;
+            }
+
+            .game-info {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .game-stats {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .card {
+                width: 60px;
+                height: 60px;
+            }
+
+            .card-front, .card-back {
+                font-size: 22px;
+            }
+
+            .modal-content {
+                padding: 20px;
+                max-width: 95%;
+            }
+
+            .win-content {
+                padding: 25px;
+            }
+        }
+
+        
+        @media (max-width: 480px) {
+            .card {
+                width: 50px;
+                height: 50px;
+            }
+
+            .card-front, .card-back {
+                font-size: 18px;
+            }
+
+            .cards-grid {
+                padding: 12px;
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <div class="navbar-brand">🧠 Memory Master</div>
+    <div class="nav-buttons">
+        <button class="nav-btn" onclick="openModal('helpModal')">Help❓</button>
+        <button class="nav-btn" onclick="openModal('aboutModal')">Infoℹ️</button>
+        <!-- <button class="nav-btn" onclick="openModal('feedbackModal')">⭐</button> -->
+        <button class="nav-btn" onclick="openModal('leaderboardModal')">Leader Board🏆</button>
+        <button class="nav-btn" id="soundToggle" onclick="toggleSound()">🔊</button>
+        <!-- <button class="nav-btn" onclick="openModal('changePasswordModal')">🔑</button> -->
+        <button class="nav-btn" onclick="logout()" style="background: #ff6b6b;">🚪</button>
+    </div>
+</div>
+
+<!-- LOGIN/REGISTER MODAL -->
+<div class="modal" id="loginModal">
+    <div class="modal-content" style="max-width: 380px;">
+        <div class="modal-tabs">
+            <button class="modal-tab active" id="loginTab" onclick="switchToLogin()">Login</button>
+            <button class="modal-tab" id="registerTab" onclick="switchToRegister()">Register</button>
+        </div>
+
+        <div id="loginForm">
+            <h2 class="modal-title">Login</h2>
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" id="loginUsername" placeholder="Enter username">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="loginPassword" placeholder="Enter password">
+            </div>
+            <!-- <a class="forgot-password-link" onclick="openModal('forgotPasswordModal')">Forgot Password?</a> -->
+            <button class="btn btn-primary" onclick="login()">Login</button>
+        </div>
+
+        <div id="registerForm" style="display: none;">
+            <h2 class="modal-title">Register</h2>
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" id="registerUsername" placeholder="Enter username">
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="registerEmail" placeholder="Enter email">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="registerPassword" placeholder="Enter password">
+            </div>
+            <div class="form-group">
+                <label>Confirm Password</label>
+                <input type="password" id="registerConfirmPassword" placeholder="Confirm password">
+            </div>
+            <button class="btn btn-primary" onclick="register()">Register</button>
+            <center>
+            <p>Note: Don't Forgot your username & password</p>
+            </center>
+        </div>
+    </div>
+</div>
+
+<!-- FORGOT PASSWORD MODAL -->
+<div class="modal" id="forgotPasswordModal">
+    <div class="modal-content" style="max-width: 380px;">
+        <h2 class="modal-title">Forgot Password</h2>
+        <p style="color: #666; font-size: 13px; margin-bottom: 15px;">
+            Enter your registered email address. We'll send you a password reset code.
+        </p>
+        <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" id="forgotEmail" placeholder="Enter your email">
+        </div>
+        <button class="btn btn-primary" onclick="sendResetCode()">Send Reset Code</button>
+        <button class="btn btn-secondary" onclick="closeModal('forgotPasswordModal')">Cancel</button>
+    </div>
+</div>
+
+<!-- RESET PASSWORD MODAL -->
+<div class="modal" id="resetPasswordModal">
+    <div class="modal-content" style="max-width: 380px;">
+        <h2 class="modal-title">Reset Password</h2>
+        <div class="form-group">
+            <label>Reset Code (sent to email)</label>
+            <input type="text" id="resetCode" placeholder="Enter 6-digit code">
+        </div>
+        <div class="form-group">
+            <label>New Password</label>
+            <input type="password" id="resetNewPassword" placeholder="Enter new password">
+        </div>
+        <div class="form-group">
+            <label>Confirm New Password</label>
+            <input type="password" id="resetConfirmPassword" placeholder="Confirm new password">
+        </div>
+        <button class="btn btn-primary" onclick="resetPassword()">Reset Password</button>
+        <button class="btn btn-secondary" onclick="closeModal('resetPasswordModal')">Cancel</button>
+    </div>
+</div>
+
+<!-- CHANGE PASSWORD MODAL -->
+<div class="modal" id="changePasswordModal">
+    <div class="modal-content" style="max-width: 380px;">
+        <h2 class="modal-title">Change Password</h2>
+        <div class="form-group">
+            <label>Current Password</label>
+            <input type="password" id="currentPassword" placeholder="Enter current password">
+        </div>
+        <div class="form-group">
+            <label>New Password</label>
+            <input type="password" id="newPassword" placeholder="Enter new password">
+        </div>
+        <div class="form-group">
+            <label>Confirm New Password</label>
+            <input type="password" id="confirmNewPassword" placeholder="Confirm new password">
+        </div>
+        <button class="btn btn-primary" onclick="changePassword()">Change Password</button>
+        <button class="btn btn-secondary" onclick="closeModal('changePasswordModal')">Cancel</button>
+    </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+    <div class="dashboard-header">
+        <div class="user-info">
+            <div class="info-item">
+                <div class="info-label">Username</div>
+                <div class="info-value" id="profileUsername">-</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Total Score</div>
+                <div class="info-value" id="totalScore">0</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Games Played</div>
+                <div class="info-value" id="gamesPlayed">0</div>
+            </div>
+        </div>
+    </div>
+
+    <h3 style="margin: 25px 0 12px; color: white; font-size: 18px;">Select Level</h3>
+    <div class="level-selector">
+        <button class="level-btn" onclick="startGame('easy')"> Easy<br><small>3×4 Grid</small></button>
+        <button class="level-btn" onclick="startGame('medium')"> Medium<br><small>4×5 Grid</small></button>
+        <button class="level-btn" onclick="startGame('hard')"> Hard<br><small>5×6 Grid</small></button>
+    </div>
+
+    <h3 style="margin: 25px 0 12px; color: white; font-size: 18px;">Your Best Scores</h3>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-card-title">Easy Level</div>
+            <div class="stat-row">
+                <span class="stat-label">Best Time</span>
+                <span class="stat-value" id="easyBestTime">--</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Best Moves</span>
+                <span class="stat-value" id="easyBestMoves">--</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">High Score</span>
+                <span class="stat-value" id="easyHighScore">0</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-card-title">Medium Level</div>
+            <div class="stat-row">
+                <span class="stat-label">Best Time</span>
+                <span class="stat-value" id="mediumBestTime">--</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Best Moves</span>
+                <span class="stat-value" id="mediumBestMoves">--</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">High Score</span>
+                <span class="stat-value" id="mediumHighScore">0</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-card-title">Hard Level</div>
+            <div class="stat-row">
+                <span class="stat-label">Best Time</span>
+                <span class="stat-value" id="hardBestTime">--</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Best Moves</span>
+                <span class="stat-value" id="hardBestMoves">--</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">High Score</span>
+                <span class="stat-value" id="hardHighScore">0</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- GAME SCREEN -->
+<div id="gameScreen">
+    <div class="game-header">
+        <div class="game-info">
+            <div class="game-title" id="currentLevel">-</div>
+            <div class="game-stats">
+                <div class="game-stat">
+                    <div class="game-stat-label">Time</div>
+                    <div class="game-stat-value" id="timer">00:00</div>
+                </div>
+                <div class="game-stat">
+                    <div class="game-stat-label">Moves</div>
+                    <div class="game-stat-value" id="moves">0</div>
+                </div>
+                <div class="game-stat">
+                    <div class="game-stat-label">Score</div>
+                    <div class="game-stat-value" id="score">0</div>
+                </div>
+            </div>
+        </div>
+        <div class="game-controls">
+            <button class="game-btn" id="pauseBtn" onclick="pauseGame()">⏸ Pause</button>
+            <button class="game-btn" onclick="restartGame()">🔄 Restart</button>
+            <button class="game-btn" onclick="backToHome()">🏠 Home</button>
+        </div>
+    </div>
+
+    <div class="cards-grid" id="cardsGrid"></div>
+</div>
+
+<!-- WIN MODAL -->
+<div id="levelCompletedModal">
+    <div class="win-content">
+        <div class="win-title">🎉 Level Complete!</div>
+        <div class="win-stat">Score: <span class="win-stat-value" id="levelCompletedScore">0</span></div>
+        <div class="win-stat">Time: <span class="win-stat-value" id="levelCompletedTime">00:00</span></div>
+        <div class="win-stat">Moves: <span class="win-stat-value" id="levelCompletedMoves">0</span></div>
+        <div class="win-buttons">
+            <button class="btn btn-primary" onclick="playAgain()">Play Again</button>
+            <button class="btn btn-secondary" onclick="backToHome()">Home</button>
+        </div>
+    </div>
+</div>
+
+<!-- OTHER MODALS -->
+<div class="modal" id="helpModal">
+    <div class="modal-content">
+        <h2 class="modal-title">How to Play</h2>
+        <p style="line-height: 1.6; color: #333;">
+            <strong>Memory Master</strong> - Test your memory!<br><br>
+            <strong>Rules:</strong><br>
+            1. Click cards to flip them<br>
+            2. Find matching pairs<br>
+            3. Match all pairs to win<br><br>
+            <strong>Levels:</strong><br>
+            🟢 Easy: 3×4 grid (12 cards)<br>
+            🟡 Medium: 4×5 grid (20 cards)<br>
+            🔴 Hard: 5×6 grid (30 cards)
+        </p>
+        <button class="btn btn-secondary" onclick="closeModal('helpModal')">Close</button>
+    </div>
+</div>
+
+<div class="modal" id="aboutModal">
+    <div class="modal-content">
+        <h2 class="modal-title">About</h2>
+        <p style="line-height: 1.6; color: #333;">
+            <strong>Memory Master v3.0</strong><br><br>
+            Features:<br>
+            ✓ 3 difficulty levels<br>
+            ✓ Password management<br>
+            ✓ Leaderboards<br>
+            ✓ Mobile responsive<br>
+            ✓ Sound effects<br><br>
+            Made with ❤️ by Your Name
+        </p>
+        <button class="btn btn-secondary" onclick="closeModal('aboutModal')">Close</button>
+    </div>
+</div>
+
+<!-- <div class="modal" id="feedbackModal">
+    <div class="modal-content">
+        <h2 class="modal-title">Send Feedback</h2>
+        <div class="form-group">
+            <label>Your Feedback</label>
+            <textarea id="feedbackText" rows="5" placeholder="Tell us what you think..."></textarea>
+        </div>
+        <button class="btn btn-primary" onclick="submitFeedback()">Submit</button>
+        <button class="btn btn-secondary" onclick="closeModal('feedbackModal')">Cancel</button>
+    </div>
+</div> -->
+
+<div class="modal" id="leaderboardModal">
+    <div class="modal-content">
+        <h2 class="modal-title">🏆 Leaderboards</h2>
+        <div style="margin-bottom: 20px;">
+            <h3 style="margin-bottom: 10px; color: #667eea; font-size: 15px;">Easy Level</h3>
+            <div id="easyLeaderboard"></div>
+        </div>
+        <div style="margin-bottom: 20px;">
+            <h3 style="margin-bottom: 10px; color: #667eea; font-size: 15px;">Medium Level</h3>
+            <div id="mediumLeaderboard"></div>
+        </div>
+        <div>
+            <h3 style="margin-bottom: 10px; color: #667eea; font-size: 15px;">Hard Level</h3>
+            <div id="hardLeaderboard"></div>
+        </div>
+        <button class="btn btn-secondary" onclick="closeModal('leaderboardModal')" style="margin-top: 15px;">Close</button>
+    </div>
+</div>
+
+<script>
+// ============================================================================
+// MEMORY MASTER - COMPLETE JAVASCRIPT (IMPROVED VERSION)
+// ============================================================================
+
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbypsXWgqmJ6PWvFer6YRSnmjiWT9YodAMRnUEvS_UlXGQ-057Vk6fb58aBEK2zZGr7f/exec';
+
+const gameConfig = {
+    easy: { name: 'Easy (3×4)', cards: 12, rows: 3, cols: 4, emojis: ['🍎', '🍌', '🍇', '🍊', '🍓', '🍉'] },
+    medium: { name: 'Medium (4×5)', cards: 20, rows: 4, cols: 5, emojis: ['🌟', '🎨', '🎭', '🎪', '🎸', '🎬', '🎮', '🎲', '🎯', '🏆'] },
+    hard: { name: 'Hard (5×6)', cards: 30, rows: 5, cols: 6, emojis: ['🚀', '🛸', '🌌', '⭐', '🪐', '🌙', '☄️', '💫', '🌠', '🔭', '🛰️', '👽', '🚁', '✈️', '🛩️'] }
+};
+
+let currentUser = null;
+let gameState = {
+    level: null,
+    cards: [],
+    flippedCards: [],
+    matchedPairs: 0,
+    moves: 0,
+    score: 0,
+    timer: 0,
+    startTime: null,
+    timerInterval: null,
+    canFlip: true,
+    isPaused: false
+};
+
+let soundEnabled = true;
+let resetEmail = '';
+let resetCodeGenerated = '';
+let audioContext;
+
+// Initialize audio context
+try {
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+} catch (e) {
+    console.log('AudioContext not available');
+}
+
+// ============================================================================
+// API CALLS
+// ============================================================================
+
+async function callAPI(action, data = {}) {
+    try {
+        console.log('API Call:', action, data);
+        const formData = new FormData();
+        formData.append('action', action);
+        Object.keys(data).forEach(key => formData.append(key, data[key]));
+
+        const response = await fetch(GOOGLE_SCRIPT_URL, {
+            method: 'POST',
+            body: formData
+        });
+
+        const result = await response.json();
+        console.log('API Response:', result);
+        return result;
+    } catch (error) {
+        console.error('API Error:', error);
+        throw new Error('Connection failed. Check your internet connection.');
+    }
+}
+
+// ============================================================================
+// AUTHENTICATION
+// ============================================================================
+
+function switchToLogin() {
+    document.getElementById('loginForm').style.display = 'block';
+    document.getElementById('registerForm').style.display = 'none';
+    document.getElementById('loginTab').classList.add('active');
+    document.getElementById('registerTab').classList.remove('active');
+}
+
+function switchToRegister() {
+    document.getElementById('loginForm').style.display = 'none';
+    document.getElementById('registerForm').style.display = 'block';
+    document.getElementById('loginTab').classList.remove('active');
+    document.getElementById('registerTab').classList.add('active');
+}
+
+async function login() {
+    const username = document.getElementById('loginUsername').value.trim();
+    const password = document.getElementById('loginPassword').value;
+
+    if (!username || !password) {
+        alert('Please enter username and password');
+        return;
+    }
+
+    try {
+        const response = await callAPI('login', { username, password });
+        
+        if (response.success) {
+            currentUser = {
+                username: username,
+                email: response.email || '',
+                totalScore: response.totalScore || 0,
+                gamesPlayed: response.gamesPlayed || 0,
+                stats: response.stats || {
+                    easy: { bestTime: null, bestMoves: null, highScore: 0 },
+                    medium: { bestTime: null, bestMoves: null, highScore: 0 },
+                    hard: { bestTime: null, bestMoves: null, highScore: 0 }
+                }
+            };
+            document.getElementById('loginUsername').value = '';
+            document.getElementById('loginPassword').value = '';
+            alert('✅ Login successful!');
+            showDashboard();
+        } else {
+            alert('❌ ' + (response.message || 'Login failed'));
+        }
+    } catch (error) {
+        alert('❌ ' + error.message);
+    }
+}
+
+async function register() {
+    const username = document.getElementById('registerUsername').value.trim();
+    const email = document.getElementById('registerEmail').value.trim();
+    const password = document.getElementById('registerPassword').value;
+    const confirmPassword = document.getElementById('registerConfirmPassword').value;
+
+    if (!username || username.length < 3) {
+        alert('Username must be at least 3 characters');
+        return;
+    }
+    if (!email || !email.includes('@')) {
+        alert('Please enter a valid email');
+        return;
+    }
+    if (!password || password.length < 6) {
+        alert('Password must be at least 6 characters');
+        return;
+    }
+    if (password !== confirmPassword) {
+        alert('Passwords do not match');
+        return;
+    }
+
+    try {
+        const response = await callAPI('register', { username, email, password });
+        
+        if (response.success) {
+            currentUser = {
+                username: username,
+                email: email,
+                totalScore: 0,
+                gamesPlayed: 0,
+                stats: {
+                    easy: { bestTime: null, bestMoves: null, highScore: 0 },
+                    medium: { bestTime: null, bestMoves: null, highScore: 0 },
+                    hard: { bestTime: null, bestMoves: null, highScore: 0 }
+                }
+            };
+            document.getElementById('registerUsername').value = '';
+            document.getElementById('registerEmail').value = '';
+            document.getElementById('registerPassword').value = '';
+            document.getElementById('registerConfirmPassword').value = '';
+            alert('✅ Registration successful!');
+            showDashboard();
+        } else {
+            alert('❌ ' + (response.message || 'Registration failed'));
+        }
+    } catch (error) {
+        alert('❌ ' + error.message);
+    }
+}
+
+async function sendResetCode() {
+    const email = document.getElementById('forgotEmail').value.trim();
+    
+    if (!email || !email.includes('@')) {
+        alert('Please enter a valid email');
+        return;
+    }
+
+    try {
+        const response = await callAPI('sendResetCode', { email });
+        
+        if (response.success) {
+            resetEmail = email;
+            resetCodeGenerated = response.resetCode;
+            closeModal('forgotPasswordModal');
+            openModal('resetPasswordModal');
+            alert('✅ Reset code sent to your email!');
+        } else {
+            alert('❌ ' + (response.message || 'Email not found'));
+        }
+    } catch (error) {
+        alert('❌ ' + error.message);
+    }
+}
+
+async function resetPassword() {
+    const code = document.getElementById('resetCode').value.trim();
+    const newPassword = document.getElementById('resetNewPassword').value;
+    const confirmPassword = document.getElementById('resetConfirmPassword').value;
+
+    if (!code || code.length !== 6) {
+        alert('Please enter the 6-digit reset code');
+        return;
+    }
+    if (!newPassword || newPassword.length < 6) {
+        alert('New password must be at least 6 characters');
+        return;
+    }
+    if (newPassword !== confirmPassword) {
+        alert('Passwords do not match');
+        return;
+    }
+
+    try {
+        const response = await callAPI('resetPassword', {
+            email: resetEmail,
+            resetCode: code,
+            newPassword: newPassword
+        });
+        
+        if (response.success) {
+            document.getElementById('resetCode').value = '';
+            document.getElementById('resetNewPassword').value = '';
+            document.getElementById('resetConfirmPassword').value = '';
+            closeModal('resetPasswordModal');
+            alert('✅ Password reset successful! You can now login with your new password.');
+        } else {
+            alert('❌ ' + (response.message || 'Invalid reset code'));
+        }
+    } catch (error) {
+        alert('❌ ' + error.message);
+    }
+}
+
+async function changePassword() {
+    if (!currentUser) {
+        alert('Please login first');
+        return;
+    }
+
+    const currentPassword = document.getElementById('currentPassword').value;
+    const newPassword = document.getElementById('newPassword').value;
+    const confirmPassword = document.getElementById('confirmNewPassword').value;
+
+    if (!currentPassword) {
+        alert('Please enter current password');
+        return;
+    }
+    if (!newPassword || newPassword.length < 6) {
+        alert('New password must be at least 6 characters');
+        return;
+    }
+    if (newPassword !== confirmPassword) {
+        alert('New passwords do not match');
+        return;
+    }
+
+    try {
+        const response = await callAPI('changePassword', {
+            username: currentUser.username,
+            currentPassword: currentPassword,
+            newPassword: newPassword
+        });
+        
+        if (response.success) {
+            document.getElementById('currentPassword').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmNewPassword').value = '';
+            closeModal('changePasswordModal');
+            alert('✅ Password changed successfully!');
+        } else {
+            alert('❌ ' + (response.message || 'Current password is incorrect'));
+        }
+    } catch (error) {
+        alert('❌ ' + error.message);
+    }
+}
+
+function logout() {
+    if (confirm('Are you sure you want to logout?')) {
+        currentUser = null;
+        if (gameState.timerInterval) clearInterval(gameState.timerInterval);
+        showScreen('loginModal');
+        switchToLogin();
+    }
+}
+
+// ============================================================================
+// SCREEN MANAGEMENT
+// ============================================================================
+
+function hideAllScreens() {
+    document.getElementById('loginModal').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'none';
+    document.getElementById('gameScreen').style.display = 'none';
+}
+
+function showScreen(screenId) {
+    hideAllScreens();
+    document.getElementById(screenId).style.display = screenId === 'loginModal' ? 'flex' : 'block';
+}
+
+function showDashboard() {
+    document.getElementById('profileUsername').textContent = currentUser.username;
+    updateDashboardStats();
+    showScreen('dashboard');
+    loadLeaderboards();
+}
+
+function updateDashboardStats() {
+    document.getElementById('totalScore').textContent = currentUser.totalScore || 0;
+    document.getElementById('gamesPlayed').textContent = currentUser.gamesPlayed || 0;
+
+    ['easy', 'medium', 'hard'].forEach(level => {
+        const stats = currentUser.stats[level];
+        document.getElementById(`${level}BestTime`).textContent = stats.bestTime ? formatTime(stats.bestTime) : '--';
+        document.getElementById(`${level}BestMoves`).textContent = stats.bestMoves || '--';
+        document.getElementById(`${level}HighScore`).textContent = stats.highScore || 0;
+    });
+}
+
+// ============================================================================
+// GAME LOGIC
+// ============================================================================
+
+function startGame(level) {
+    gameState.level = level;
+    gameState.moves = 0;
+    gameState.score = 0;
+    gameState.timer = 0;
+    gameState.startTime = null;
+    gameState.matchedPairs = 0;
+    gameState.flippedCards = [];
+    gameState.canFlip = true;
+    gameState.cards = [];
+    gameState.isPaused = false;
+    
+    if (gameState.timerInterval) clearInterval(gameState.timerInterval);
+
+    document.getElementById('currentLevel').textContent = gameConfig[level].name;
+    document.getElementById('moves').textContent = '0';
+    document.getElementById('score').textContent = '0';
+    document.getElementById('timer').textContent = '00:00';
+    document.getElementById('pauseBtn').textContent = '⏸ Pause';
+    
+    createCards(level);
+    showScreen('gameScreen');
+}
+
+function createCards(level) {
+    const config = gameConfig[level];
+    const cardsGrid = document.getElementById('cardsGrid');
+    
+    cardsGrid.innerHTML = '';
+    cardsGrid.className = `cards-grid grid-${level}`;
+
+    const emojis = config.emojis;
+    const pairs = config.cards / 2;
+    const cardEmojis = [];
+
+    for (let i = 0; i < pairs; i++) {
+        cardEmojis.push(emojis[i], emojis[i]);
+    }
+
+    cardEmojis.sort(() => Math.random() - 0.5);
+
+    gameState.cards = cardEmojis.map((emoji, index) => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `<div class="card-inner"><div class="card-front">❓</div><div class="card-back">${emoji}</div></div>`;
+        card.onclick = () => flipCard(index);
+        cardsGrid.appendChild(card);
+        return { emoji, flipped: false, matched: false };
+    });
+}
+
+function flipCard(index) {
+    if (gameState.isPaused || !gameState.canFlip) return;
+    if (gameState.flippedCards.includes(index)) return;
+    if (gameState.cards[index].matched) return;
+    if (gameState.flippedCards.length >= 2) return;
+
+    if (gameState.flippedCards.length === 0 && gameState.startTime === null) {
+        gameState.startTime = Date.now();
+        startTimer();
+    }
+
+    gameState.flippedCards.push(index);
+    gameState.cards[index].flipped = true;
+    
+    const cards = document.querySelectorAll('.card');
+    cards[index].classList.add('flipped');
+    
+    playSound('flip');
+
+    if (gameState.flippedCards.length === 2) {
+        gameState.canFlip = false;
+        gameState.moves++;
+        document.getElementById('moves').textContent = gameState.moves;
+        setTimeout(checkMatch, 600);
+    }
+}
+
+function checkMatch() {
+    const [a, b] = gameState.flippedCards;
+    const cards = document.querySelectorAll('.card');
+
+    if (gameState.cards[a].emoji === gameState.cards[b].emoji) {
+        gameState.cards[a].matched = true;
+        gameState.cards[b].matched = true;
+        gameState.matchedPairs++;
+        
+        playSound('match');
+        
+        cards[a].classList.add('matched');
+        cards[b].classList.add('matched');
+        
+        gameState.flippedCards = [];
+        gameState.canFlip = true;
+
+        if (gameState.matchedPairs === gameState.cards.length / 2) {
+            setTimeout(endGame, 500);
+        }
+    } else {
+        playSound('wrong');
+        setTimeout(() => {
+            cards[a].classList.remove('flipped');
+            cards[b].classList.remove('flipped');
+            gameState.cards[a].flipped = false;
+            gameState.cards[b].flipped = false;
+            gameState.flippedCards = [];
+            gameState.canFlip = true;
+        }, 1000);
+    }
+}
+
+function startTimer() {
+    gameState.timerInterval = setInterval(() => {
+        const elapsed = Math.floor((Date.now() - gameState.startTime) / 1000);
+        gameState.timer = elapsed;
+        document.getElementById('timer').textContent = formatTime(elapsed);
+    }, 100);
+}
+
+function pauseGame() {
+    gameState.isPaused = !gameState.isPaused;
+    const btn = document.getElementById('pauseBtn');
+    
+    if (gameState.isPaused) {
+        clearInterval(gameState.timerInterval);
+        btn.textContent = '▶ Resume';
+    } else {
+        gameState.startTime = Date.now() - (gameState.timer * 1000);
+        startTimer();
+        btn.textContent = '⏸ Pause';
+    }
+}
+
+function restartGame() {
+    if (confirm('Restart game?')) {
+        startGame(gameState.level);
+    }
+}
+
+async function endGame() {
+    clearInterval(gameState.timerInterval);
+    const finalTime = gameState.timer;
+    const score = Math.max(100, 1000 - finalTime - gameState.moves * 2);
+    gameState.score = score;
+
+    playSound('win');
+
+    if (typeof JSConfetti !== 'undefined') {
+        const jsConfetti = new JSConfetti();
+        jsConfetti.addConfetti({ emojis: ['🎉', '✨', '🏆'], confettiNumber: 50 });
+    }
+
+    document.getElementById('levelCompletedScore').textContent = score;
+    document.getElementById('levelCompletedTime').textContent = formatTime(finalTime);
+    document.getElementById('levelCompletedMoves').textContent = gameState.moves;
+    document.getElementById('levelCompletedModal').style.display = 'flex';
+
+    await submitScore(finalTime);
+}
+
+async function submitScore(finalTime) {
+    if (!currentUser) return;
+    
+    try {
+        const response = await callAPI('submitScore', {
+            username: currentUser.username,
+            level: gameState.level,
+            score: gameState.score,
+            time: finalTime,
+            moves: gameState.moves
+        });
+
+        if (response.success) {
+            currentUser.totalScore += gameState.score;
+            currentUser.gamesPlayed += 1;
+            
+            const levelStats = currentUser.stats[gameState.level];
+            if (!levelStats.bestTime || finalTime < levelStats.bestTime) {
+                levelStats.bestTime = finalTime;
+            }
+            if (!levelStats.bestMoves || gameState.moves < levelStats.bestMoves) {
+                levelStats.bestMoves = gameState.moves;
+            }
+            if (gameState.score > levelStats.highScore) {
+                levelStats.highScore = gameState.score;
+            }
+        }
+    } catch (error) {
+        console.error('Score submission error:', error);
+    }
+}
+
+function playAgain() {
+    document.getElementById('levelCompletedModal').style.display = 'none';
+    startGame(gameState.level);
+}
+
+function backToHome() {
+    document.getElementById('levelCompletedModal').style.display = 'none';
+    clearInterval(gameState.timerInterval);
+    showDashboard();
+}
+
+async function loadLeaderboards() {
+    try {
+        for (const level of ['easy', 'medium', 'hard']) {
+            const response = await callAPI('getLeaderboard', { level });
+            
+            if (response.success && response.data) {
+                displayLeaderboard(level, response.data);
+            }
+        }
+    } catch (error) {
+        console.error('Leaderboard error:', error);
+    }
+}
+
+function displayLeaderboard(level, scores) {
+    const container = document.getElementById(`${level}Leaderboard`);
+    if (!container) return;
+
+    container.innerHTML = '';
+    scores.slice(0, 10).forEach((entry, idx) => {
+        const row = document.createElement('div');
+        row.className = 'leaderboard-row';
+        
+        const medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : (idx + 1);
+        row.innerHTML = `<span class="rank">${medal}</span><span class="name">${entry.username}</span><span class="score">${entry.score}</span><span class="time">${formatTime(entry.time)}</span>`;
+        container.appendChild(row);
+    });
+}
+
+// ============================================================================
+// FEEDBACK
+// ============================================================================
+
+async function submitFeedback() {
+    const feedback = document.getElementById('feedbackText').value.trim();
+    
+    if (!feedback) {
+        alert('Please enter your feedback');
+        return;
+    }
+
+    try {
+        const response = await callAPI('submitFeedback', {
+            username: currentUser ? currentUser.username : 'Anonymous',
+            feedback: feedback,
+            timestamp: new Date().toISOString()
+        });
+        
+        if (response.success) {
+            document.getElementById('feedbackText').value = '';
+            closeModal('feedbackModal');
+            alert('✅ Thank you for your feedback!');
+        } else {
+            alert('❌ Failed to submit feedback. Please try again.');
+        }
+    } catch (error) {
+        alert('❌ ' + error.message);
+    }
+}
+
+// ============================================================================
+// UTILITIES
+// ============================================================================
+
+function formatTime(seconds) {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+}
+
+function playSound(type) {
+    if (!soundEnabled || !audioContext) return;
+    
+    try {
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+
+        switch(type) {
+            case 'flip':
+                oscillator.frequency.value = 400;
+                gainNode.gain.value = 0.15;
+                oscillator.start();
+                oscillator.stop(audioContext.currentTime + 0.1);
+                break;
+            case 'match':
+                oscillator.frequency.value = 600;
+                gainNode.gain.value = 0.2;
+                oscillator.start();
+                oscillator.stop(audioContext.currentTime + 0.2);
+                break;
+            case 'wrong':
+                oscillator.frequency.value = 200;
+                gainNode.gain.value = 0.1;
+                oscillator.start();
+                oscillator.stop(audioContext.currentTime + 0.15);
+                break;
+            case 'win':
+                [523, 659, 784, 1047].forEach((freq, i) => {
+                    const osc = audioContext.createOscillator();
+                    const gain = audioContext.createGain();
+                    osc.connect(gain);
+                    gain.connect(audioContext.destination);
+                    osc.frequency.value = freq;
+                    gain.gain.value = 0.2;
+                    osc.start(audioContext.currentTime + i * 0.15);
+                    osc.stop(audioContext.currentTime + i * 0.15 + 0.3);
+                });
+                break;
+        }
+    } catch (e) {
+        console.log('Sound error:', e);
+    }
+}
+
+function toggleSound() {
+    soundEnabled = !soundEnabled;
+    document.getElementById('soundToggle').textContent = soundEnabled ? '🔊' : '🔇';
+}
+
+function openModal(modalId) {
+    document.getElementById(modalId).style.display = 'flex';
+}
+
+function closeModal(modalId) {
+    document.getElementById(modalId).style.display = 'none';
+}
+
+window.onclick = function(event) {
+    if (event.target.classList.contains('modal')) {
+        event.target.style.display = 'none';
+    }
+}
+
+// ============================================================================
+// INITIALIZATION
+// ============================================================================
+
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('✅ Memory Master loaded');
+    showScreen('loginModal');
+    switchToLogin();
+});
+</script>
+</body>
+</html>
